@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Calendar</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Using Bootstrap CSS -->
+    <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" rel="stylesheet">
+    <link rel="stylesheet" href="../resources/style.css">
+
+    <!--jquery ui files for time widget-->
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <!-- Favicon -->
+    <!-- Source: https://favicon.io/emoji-favicons/spiral-calendar/ -->
+    <link rel="icon" type="image/png" href="../images/spiral-calendar.png" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <!-- Calendar region -->
+            <div class="col-12" id="calendar">
+                <div class="row">
+                    <div class="col-7">
+                        <h3>Calendar</h3>
+                    </div>
+                    <div class="col-2" id='username'>
+                        Not logged in
+                    </div>
+                    <div class="col-3">
+                        <button type="button" class="btn btn-outline-primary" id='account-button'>Login/Sign up</button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-4">
+                        <div class="input-group mb-3">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary">Go to date</button>
+                            </div>
+                            <input id="changeDate" type="date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-1"></div>
+                    <div class="col-5" id="setTime"></div>
+                    <div class="col-2"><button type="button" class="btn btn-outline-danger" id='add'>+ Add
+                            event</button></div>
+                </div>
+
+                <!-- Tags (dynamic) -->
+                <div class="row" id='tag-line'>
+                </div>
+
+                <table class="table table-bordered">
+                    <thead style="text-align: center">
+                        <tr>
+                            <th scope="col" style="padding-top: 10px; padding-bottom: 10px">SUN</th>
+                            <th scope="col" style="padding-top: 10px; padding-bottom: 10px">MON</th>
+                            <th scope="col" style="padding-top: 10px; padding-bottom: 10px">TUE</th>
+                            <th scope="col" style="padding-top: 10px; padding-bottom: 10px">WED</th>
+                            <th scope="col" style="padding-top: 10px; padding-bottom: 10px">THU</th>
+                            <th scope="col" style="padding-top: 10px; padding-bottom: 10px">FRI</th>
+                            <th scope="col" style="padding-top: 10px; padding-bottom: 10px">SAT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+
+                <div style="text-align: center">
+
+
+                    <button id='prev' type="button" class="btn btn-secondary">
+                        &lt; Previous month
+                    </button>
+
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                    <button id='today' type="button" class="btn btn-success">Today
+                    </button>
+
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                    <button id='next' type="button" class="btn btn-primary">
+                        Next month &gt;
+                    </button>
+
+                </div>
+
+                <hr>
+
+                <div class="input-group mb-3">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">Share my whole calendar with: </button>
+                    </div>
+                    <textarea id="share-usernames" class="form-control" rows=2 cols="5"
+                        placeholder='Member usernames, separate by ","'></textarea>
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="button" id="share-submit">Share</button>
+                    </div>
+                    <div class="input-group-append">
+                        <button class="btn btn-secondary" type="button" id="share-undo">Undo change</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col" id="sidebar">
+                <hr>
+
+                <div class="input-group mb-3">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">Title</button>
+                    </div>
+                    <input id="sidebar-title" type="text" class="form-control" value="New Event Title">
+                </div>
+
+                <textarea id="sidebar-content" name="description" class="form-control" rows=2
+                    placeholder="Description (optional)"></textarea>
+                <hr>
+
+                <div class="input-group mb-3">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">Tag</button>
+                    </div>
+                    <input id="sidebar-tag" type="text" class="form-control" placeholder="">
+                </div>
+                <hr>
+
+                <div class="input-group mb-3">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">Start date</button>
+                    </div>
+                    <input id="sidebar-start-date" type="date" class="form-control">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">Start time</button>
+                    </div>
+                    <input id="sidebar-start-hour" type="time" class="form-control">
+                </div>
+                <hr>
+                <div>Optional below</div>
+                <div class="input-group mb-3">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">End date</button>
+                    </div>
+                    <input id="sidebar-end-date" type="date" class="form-control">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">End time</button>
+                    </div>
+                    <input id="sidebar-end-hour" type="time" class="form-control">
+                </div>
+
+                <div class="input-group mb-3">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">Group</button>
+                    </div>
+                    <textarea id="sidebar-group-usernames" class="form-control" rows=2
+                        placeholder='Member usernames, separate by ","'></textarea>
+                </div>
+
+                <!-- If new event: event_id default to "": call addevent api; if event_id > 0, call editevent/delete event -->
+                <input type="hidden" id='sidebar-event-id' value="">
+
+
+                <button id="sidebar-submit" type="submit" class="btn btn-outline-primary">Submit</button>
+                <button id="sidebar-cancel" type="submit" class="btn btn-outline-secondary">Cancel</button>
+                <button id="sidebar-delete" type="submit" class="btn btn-outline-danger">Delete</button>
+
+                <hr>
+
+            </div>
+
+            <!-- Account sidebar: Login/Sign up -->
+            <div class="col" id="account-bar">
+                <hr>
+
+                <h4>Login</h4>
+
+                <div class="input-group mb-3">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">Username</button>
+                    </div>
+                    <input id="login-username" type="text" class="form-control" value="">
+                </div>
+
+                <div class="input-group mb-3">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">Password</button>
+                    </div>
+                    <input id="login-password" type="password" class="form-control" value="">
+                </div>
+
+                <button id="login-submit" type="submit" class="btn btn-outline-primary">Submit</button>
+                <button id="login-cancel" type="submit" class="btn btn-outline-secondary">Cancel</button>
+
+                <hr>
+
+                <h4>Sign up</h4>
+
+                <div class="input-group mb-3">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">Username</button>
+                    </div>
+                    <input id="signup-username" type="text" class="form-control" value="">
+                </div>
+
+                <div class="input-group mb-3">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">Password</button>
+                    </div>
+                    <input id="signup-password" type="password" class="form-control" value="">
+                </div>
+
+                <div class="input-group mb-3">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">Confirm password</button>
+                    </div>
+                    <input id="signup-password2" type="password" class="form-control" value="">
+                </div>
+
+                <button id="signup-submit" type="submit" class="btn btn-outline-primary">Submit</button>
+                <button id="signup-cancel" type="submit" class="btn btn-outline-secondary">Cancel</button>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script src="../resources/calendar.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+    <script>
+
+        // ==================== Global Variables ====================
+
+        const api_events = '../api/myevent.php';
+        const api_events_add = '../api/addevent.php';
+        const api_events_update = '../api/updateevent.php';
+        const api_events_delete = '../api/deleteevent.php';
+        const api_user_info = '../api/user_info.php';
+        const api_user_login = '../api/login.php';
+        const api_user_logout = '../api/logout.php';
+        const api_user_signup = '../api/register.php';
+        const api_share_change = '../api/addshareuser.php';
+        const api_share_cur = '../api/current_shareduser.php'
+
+        // Change to real paths (Below are dummy)
+        // const api_events = '../api/myevent_out_dummy.php';
+        // const api_events_add = '../api/api-dummy.php';
+        // const api_events_update = '../api/api-dummy.php';
+        // const api_events_delete = '../api/api-dummy.php';
+        // const api_user_info = '../api/api-user-info-dummy.php';
+        // const api_user_login = '../api/api-user-info-dummy.php';
+        // const api_user_logout = '../api/api-dummy.php';
+        // const api_user_signup = '../api/api-user-info-dummy.php';
+
+        // Global variables
+        // Work with all date formats: DD/MM/YYYY, MM/DD/YYYY, YYYY/MM/DD
+        dateObj = new Date();
+        year = dateObj.getFullYear(); //return type is Number
+        month = dateObj.getMonth();  // 0: Jan, 1: Feb, ..., 11: Dec
+        monthDate = dateObj.getDate();  // 1 to 31. Using this name, rather than day or date, to avoid ambiguity
+        weekday = dateObj.getDay();  // 0: Sun, 1: Mon, 2: Tue, ..., 6: Sat
+        currentMonth = new Month(year, month);
+        today = String(year) + '-' + ('0' + String(month + 1)).slice(-2) + '-' + ('0' + String(monthDate)).slice(-2);
+
+        userid = null;
+        username = null;
+        token = null;
+        d1 = calDateFirst(currentMonth);
+        d2 = calDateLast(currentMonth);
+
+
+        // ==================== Functions ====================
+
+        // Read events of this month
+        function updateCalendar() {
+            fetch(api_events, {
+                method: 'POST',
+                body: JSON.stringify({
+                    "userid": userid,
+                    "d1": d1,
+                    "d2": d2,
+                    "token": token
+                }),
+                headers: { 'content-type': 'application/json' }
+            })
+                .then(res => res.json())
+                .then(data => updateCalendarHelper(data))
+                .catch(function (error) {
+                    console.log('Found an error ' + error);
+                    return 'Found an error ' + error;
+                });
+        }
+
+        // Update calendar with data
+        function updateCalendarHelper(eventObj) {
+            //show calendar's date, at top right corner of the web page
+            $("#info").remove();
+            $("#setTime").append("<button ID='info' type=\"button\" class=\"btn btn-outline-success\">" + parseInt(currentMonth.month + 1) + '/' + currentMonth.year + "</button>");
+
+            let weeks = currentMonth.getWeeks();
+            $("tbody").empty();
+            $('#tag-line').empty();
+
+            // Parse eventObj
+            // Need to consider 1) all are null; 2) some elements are null
+            let arr_event_id = eventObj['EventID'];
+            let arr_event_title = eventObj['EventTitle'];
+            let arr_event_content = eventObj['EventContent'];
+            let arr_event_start_time = eventObj['EventStartTime'];
+            let arr_event_end_time = eventObj['EventEndTime'];
+            let arr_tag = eventObj['Tag'];
+            let arr_group_usernames = eventObj['GroupUsernames'];
+
+            for (let w in weeks) {
+                $("tbody").append("<tr id=" + w + "></tr>");
+
+                // days contains normal JavaScript Date objects.
+                let days = weeks[w].getDates();
+
+                for (let d in days) {
+                    let id_each_date = 'date' + String(days[d].getFullYear()) + '-' + ('0' + String(days[d].getMonth() + 1)).slice(-2) + '-' + ('0' + String(days[d].getDate())).slice(-2);  // Same format as in MySQL: YYYY-MM-DD
+                    // Add unique id to each event, to add event later
+                    $("#" + w).append("<td id=" + id_each_date + "><div id=" + id_each_date + "num" + ">" + days[d].getDate() + "</div></td>")
+                }
+            }
+
+            // Tags
+            let flag_tag = 0;
+            if (arr_tag !== null) {
+                for (let i = 0; i < arr_tag.length; ++i) {
+                    if (arr_tag[i] !== null && arr_tag.indexOf(arr_tag[i]) == i) {
+                        if (flag_tag == 0) {
+                            $('#tag-line').append('<b>Tags: </b>');
+                            flag_tag = 1;
+                        }
+                        $('#tag-line').append('<label class="checkbox-inline"><input type="checkbox" checked id="tag-' + arr_tag[i] + '">' + arr_tag[i] + '</label>');
+                        // Add listener to each tag
+                        $('#tag-' + arr_tag[i]).change(function () {
+                            if (this.checked) {
+                                $('.tag' + arr_tag[i]).show('slow');
+                            }
+                            else {
+                                $('.tag' + arr_tag[i]).hide('slow');
+                            };
+                        });
+                    }
+                }
+            }
+            if (flag_tag == 0) {
+                $('#tag-line').append('<b>Tags: </b>No tag to display');
+            }
+
+
+            // Highlight today
+            if ((currentMonth.year == year) && (currentMonth.month == month)) {
+                $("#" + 'date' + today + 'num').attr('class', 'today-cell');
+                $("#" + 'date' + today + 'num').text('▶' + String(monthDate));
+            }
+
+            // Based on events of this month, which has been read above
+            // Add div according to numbers of events
+            if (arr_event_start_time.length > 0) {
+                for (let i = 0; i < arr_event_start_time.length; ++i) {
+                    // Values of each event
+                    // Cannot be null
+                    let event_id = arr_event_id[i];
+                    let title = arr_event_title[i];
+                    let start_date = arr_event_start_time[i].split(' ')[0];
+                    let start_hour = arr_event_start_time[i].split(' ')[1];
+
+                    // Some can be null
+                    // Some arr can be null
+                    // Some element in arr can be null
+                    let end_date;
+                    let end_hour;
+                    if ((arr_event_end_time !== null) && (arr_event_end_time[i] !== null)) {
+                        end_date = arr_event_end_time[i].split(' ')[0];
+                        end_hour = arr_event_end_time[i].split(' ')[1];
+                    }
+                    else {
+                        end_date = null;
+                        end_hour = null;
+                    }
+                    let des;
+                    if ((arr_event_content !== null) && (arr_event_content[i] !== null)) {
+                        des = arr_event_content[i];
+                    }
+                    else {
+                        des = null;
+                    }
+                    let tag;
+                    if ((arr_tag !== null) && (arr_tag[i] !== null)) {
+                        tag = arr_tag[i];
+                    }
+                    else {
+                        tag = null;
+                    }
+                    let group_usernames;
+                    if ((arr_group_usernames !== null) && (arr_group_usernames[i] !== null)) {
+                        group_usernames = arr_group_usernames[i];
+                    }
+                    else {
+                        group_usernames = null;
+                    }
+
+                    $("#" + 'date' + start_date).append('<div id=' + ('eventid' + String(event_id)) + '>' + '<u>' + title + '</u>' + '</div>');
+
+                    // Add tag to class, if tag not null
+                    if (tag !== null) {
+                        $('#eventid' + String(event_id)).attr('class', 'tag' + tag);
+                    }
+
+                    // Add listener to each of event
+                    $('#' + 'eventid' + String(event_id)).hover(function (event) {
+                        $(this).css('cursor', 'pointer');
+                    });
+
+                    $('#' + 'eventid' + String(event_id)).click(function (event) {
+                        sidebarToggle(1);
+                        // When clicked, load info of this event into sidebar
+                        $("#sidebar-title").val(title);
+                        $("#sidebar-start-date").val(start_date);
+                        $("#sidebar-start-hour").val(start_hour);
+                        $("#sidebar-end-date").val(end_date);
+                        $("#sidebar-end-hour").val(end_hour);
+                        $("#sidebar-content").val(des);
+                        $("#sidebar-tag").val(tag);
+                        $("#sidebar-group-usernames").val(group_usernames);
+                        // Set event-id = real event_id for existing events
+                        $("#sidebar-event-id").val(event_id);
+
+                        // If group / shared event, cannot edit
+                        // if ($(this).attr('class') != null) {
+                        //     if ( ($(this).attr('class').indexOf('tagGroup-event-by-') >= 0) || ($(this).attr('class').indexOf('tagShared-by-') >= 0) ) {
+                        if ( $(this).attr('class') != null && ( ($(this).attr('class').indexOf('tagGroup-event-by-') >= 0) || ($(this).attr('class').indexOf('tagShared-by-') >= 0) ) ) {
+                                $('#sidebar-submit').hide();
+                                $('#sidebar-delete').hide();
+                                $("#sidebar-title").attr('readonly', true);
+                                $("#sidebar-start-date").attr('readonly', true);
+                                $("#sidebar-start-hour").attr('readonly', true);
+                                $("#sidebar-end-date").attr('readonly', true);
+                                $("#sidebar-end-hour").attr('readonly', true);
+                                $("#sidebar-content").attr('readonly', true);
+                                $("#sidebar-tag").attr('readonly', true);
+                                $("#sidebar-group-usernames").attr('readonly', true);
+                            }
+                        else {
+                            $('#sidebar-submit').show();
+                            $('#sidebar-delete').show();
+                            $("#sidebar-title").attr('readonly', false);
+                            $("#sidebar-start-date").attr('readonly', false);
+                            $("#sidebar-start-hour").attr('readonly', false);
+                            $("#sidebar-end-date").attr('readonly', false);
+                            $("#sidebar-end-hour").attr('readonly', false);
+                            $("#sidebar-content").attr('readonly', false);
+                            $("#sidebar-tag").attr('readonly', false);
+                            $("#sidebar-group-usernames").attr('readonly', false);
+                        }
+
+                    });
+                }
+            }
+
+        }
+
+        function addUpdateEvent() {
+            // Get info
+            let title = $("#sidebar-title").val();
+            let start_date = $("#sidebar-start-date").val();
+            let start_hour = $("#sidebar-start-hour").val();
+            let end_date = $("#sidebar-end-date").val();
+            let end_hour = $("#sidebar-end-hour").val();
+            let des = $("#sidebar-content").val();
+            let tag = $("#sidebar-tag").val();
+            let group_usernames = $("#sidebar-group-usernames").val().replace(/\s+/g, '').replace(/,+(?=,|$)/g, '');
+            let event_id = $("#sidebar-event-id").val();
+
+            if ( title == '' || title == null || start_date == '' || start_date == null || start_hour == '' || start_hour == null ) {
+                alert("These fields must be filled: Title, Start date, Start time");
+                return;
+            }
+
+            // Call API
+            let api;
+            if (event_id == '' || event_id == null) {
+                api = api_events_add;
+            }
+            else {
+                api = api_events_update;
+            }
+
+            fetch(api, {
+                method: 'POST',
+                body: JSON.stringify({
+                    "event_id": (event_id !== '') ? event_id : null,
+                    "event_title": (title !== '') ? title : null,
+                    "event_content": (des !== '') ? des : null,
+                    "event_start": (start_date !== '' && start_hour !== '') ? (start_date + ' ' + start_hour + ':00') : null,
+                    "event_end": (end_date !== '' && end_hour !== '') ? (end_date + ' ' + end_hour + ':00') : null,
+                    "event_tag": (tag !== '') ? tag : null,
+                    "event_group": (group_usernames !== '') ? group_usernames : null,
+                    "token": token
+                }),
+                headers: { 'content-type': 'application/json' }
+            })
+                .then(res => res.json())
+                .then(data => addUpdateEventHelper(data))
+                .catch(function (error) {
+                    console.log('Found an error ' + error);
+                    return 'Found an error ' + error;
+                });
+        }
+
+        function addUpdateEventHelper(data) {
+            if (data['success']) {
+                alert('Event added/updated successfully');
+                sidebarToggle(0);
+            }
+            else {
+                alert('Fail: ' + JSON.stringify(data));
+            }
+            updateCalendar();
+        }
+
+        function deleteEvent() {
+            // Get info
+            let event_id = $("#sidebar-event-id").val();
+
+            fetch(api_events_delete, {
+                method: 'POST',
+                body: JSON.stringify({
+                    "eventid": event_id,
+                    "token": token
+                }),
+                headers: { 'content-type': 'application/json' }
+            })
+                .then(res => res.json())
+                .then(data => deleteEventHelper(data))
+                .catch(function (error) {
+                    console.log('Found an error ' + error);
+                    return 'Found an error ' + error;
+                });
+        }
+
+        function deleteEventHelper(data) {
+            if (data['success']) {
+                alert('Event deleted successfully');
+                sidebarToggle(0);
+            }
+            else {
+                alert('Fail: ' + JSON.stringify(data));
+            }
+            updateCalendar();
+        }
+
+        // Sidebar
+        function sidebarToggle(display) {
+            if (display == 1) {
+                $("#sidebar").show();
+                $("#account-bar").hide();
+                $("#calendar").attr("class", "col-9");
+            }
+            else {
+                $("#sidebar").hide();
+                $("#calendar").attr("class", "col-12")
+            }
+        }
+
+        function sidebarValueClear() {
+            // $("#sidebar-title").attr('value', 'New Event Title');
+            $("#sidebar-title").val('New Event Title');
+            $("#sidebar-start-date").val(null);
+            $("#sidebar-start-hour").val(null);
+            $("#sidebar-end-date").val(null);
+            $("#sidebar-end-hour").val(null);
+            $("#sidebar-content").val(null);
+            $("#sidebar-tag").val(null);
+            $("#sidebar-group-usernames").val(null);
+            $("#sidebar-group-usernames").val(null);
+            // Set event-id = null for new event
+            $("#sidebar-event-id").val(null);
+        }
+
+        // Share calendar
+        function changeShareCal() {
+            // Get info
+            let share_usernames = $("#share-usernames").val().replace(/\s+/g, '').replace(/,+(?=,|$)/g, '');
+
+            if (share_usernames.split(',').indexOf(username) >= 0) {
+                alert("Cannot add username of yourself here")
+            }
+            else {
+                // Call API
+                fetch(api_share_change, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        "shareuser": (share_usernames !== '') ? share_usernames : null,
+                        "token": token
+                    }),
+                    headers: { 'content-type': 'application/json' }
+                })
+                    .then(res => res.json())
+                    .then(data => changeShareCalHelper(data))
+                    .catch(function (error) {
+                        console.log('Found an error ' + error);
+                        return 'Found an error ' + error;
+                    });
+            }
+
+        }
+
+        function changeShareCalHelper(data) {
+            if (data['success']) {
+                alert('Sharing changed successfully');
+                updateShareCal();
+            }
+            else {
+                alert('Fail: ' + JSON.stringify(data));
+            }
+        }
+
+        function updateShareCal() {
+            // Get info
+            let share_usernames = $("#share-usernames").val().replace(/\s+/g, '').replace(/,+(?=,|$)/g, '');
+            
+            // Call API
+            fetch(api_share_cur, {
+                method: 'POST',
+                body: JSON.stringify({
+                        "shareuser": (share_usernames !== '') ? share_usernames : null,
+                        "token": token
+                }),
+                headers: { 'content-type': 'application/json' }
+            })
+                .then(res => res.json())
+                .then(data => updateShareCalHelper(data))
+                .catch(function (error) {
+                    console.log('Found an error ' + error);
+                    return 'Found an error ' + error;
+                });
+        }
+
+        function updateShareCalHelper(data) {
+            $("#share-usernames").val(data['sharedusers']);
+        }
+
+        // Account
+        function accountBarToggle(display) {
+            if (display == 1) {
+                $("#account-bar").show();
+                $("#sidebar").hide();
+                $("#calendar").attr("class", "col-9");
+            }
+            else {
+                $("#account-bar").hide();
+                $("#calendar").attr("class", "col-12")
+            }
+        }
+
+        function userInfo() {
+            fetch(api_user_info, {
+                method: 'GET',
+                headers: { 'content-type': 'application/json' }
+            })
+                .then(res => res.json())
+                .then(data => userInfoHelper(data))
+                .catch(function (error) {
+                    console.log('Found an error ' + error);
+                    return 'Found an error ' + error;
+                });
+        }
+
+        function userInfoHelper(data) {
+            if (data['success']) {
+                if (data['logged-in']) {
+                    $('#username').text('Logged in as: ' + data['username']);
+                    $('#account-button').text('Log out');
+                    accountBarToggle(0);
+                    userid = data['userid'];
+                    username = data['username'];
+                    token = data['token'];
+                }
+                else {
+                    $('#username').text('Not logged in');
+                    $('#account-button').text('Log in/Sign up');
+                    userid = null;
+                    username = null;
+                }
+            }
+            else {
+                alert('Fail: ' + JSON.stringify(data));
+            }
+        }
+
+        function userLogout() {
+            fetch(api_user_logout, {
+                method: 'GET',
+                headers: { 'content-type': 'application/json' }
+            })
+                .then(res => res.json())
+                .then(data => userLogoutHelper(data))
+                .catch(function (error) {
+                    console.log('Found an error ' + error);
+                    return 'Found an error ' + error;
+                });
+        }
+
+        function userLogoutHelper(data) {
+            if (data['success']) {
+                alert('You have logged out');
+                userInfo();
+                updateCalendar();
+                updateShareCal();
+                sidebarToggle();
+                userid = null;
+                username = null;
+                token = null;
+            }
+            else {
+                alert('Fail: ' + JSON.stringify(data));
+            }
+        }
+
+        function userLogin() {
+            // Get info
+            let username = $("#login-username").val();
+            let password = $("#login-password").val();
+
+            fetch(api_user_login, {
+                method: 'POST',
+                body: JSON.stringify({
+                    "username": username,
+                    "password": password
+                }),
+                headers: { 'content-type': 'application/json' }
+            })
+                .then(res => res.json())
+                .then(data => userLoginHelper(data))
+                .catch(function (error) {
+                    console.log('Found an error ' + error);
+                    return 'Found an error ' + error;
+                });
+        }
+
+        function userLoginHelper(data) {
+            if (data['success']) {
+                alert('You have logged in');
+                $("#login-username").val(null);
+                $("#login-password").val(null);
+                userInfo();
+                updateCalendar();
+                updateShareCal();
+            }
+            else {
+                alert('Fail: ' + data['message']);
+            }
+        }
+
+        function userSignUp() {
+            // Get info
+            let username = $("#signup-username").val();
+            let password = $("#signup-password").val();
+            let password2 = $("#signup-password2").val();
+
+            // Validate two passwords
+            if (password !== password2) {
+                alert("Two passwords do not match. Please re-try.")
+            }
+            else {
+                fetch(api_user_signup, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        "username": username,
+                        "password": password
+                    }),
+                    headers: { 'content-type': 'application/json' }
+                })
+                    .then(res => res.json())
+                    .then(data => userSignUpHelper(data))
+                    .catch(function (error) {
+                        console.log('Found an error ' + error);
+                        return 'Found an error ' + error;
+                    });
+            }
+        }
+
+        function userSignUpHelper(data) {
+            if (data['success']) {
+                alert('You have signed up. Click to log in with this account.');
+                accountBarToggle(0);
+                $("#login-username").val($("#signup-username").val());
+                $("#login-password").val($("#signup-password").val());
+                $("#signup-username").val(null);
+                $("#signup-password").val(null);
+                $("#signup-password2").val(null);
+                userLogin();
+                userInfo();
+                updateCalendar();
+            }
+            else {
+                alert('Fail: ' + data['message']);
+            }
+        }
+
+        // Convert date object to string
+        function dateObjToStrN(obj) {
+            return String(obj.getFullYear()) + '-' + ('0' + String(obj.getMonth() + 1)).slice(-2) + '-' + ('0' + String(obj.getDate())).slice(-2);  // Same format as in MySQL: YYYY-MM-DD
+        }
+
+        // Get first and last date of month (calendar day, maybe from previous/next month)
+        function calDateFirst(moObj) {
+            return dateObjToStrN(moObj.getWeeks()[0].getDates()[0]);
+        }
+
+        // Get first and last date of month (calendar day, maybe from previous/next month)
+        function calDateLast(moObj) {
+            return dateObjToStrN(moObj.getWeeks()[(moObj.getWeeks()).length - 1].getDates()[6]);
+        }
+
+        //today button
+        function showtoday() {
+            document.getElementById('today').innerText = "To current month:" + (month + 1) + '/' + year;
+        }
+
+
+        // ==================== JS Body ====================
+
+        $(document).ready(function () {
+            // Things to do on page load
+            $("#sidebar").hide();
+            $("#account-bar").hide();
+
+            $("#setTime").append("<button ID='info' type=\"button\" class=\"btn btn-outline-success\">" + parseInt(currentMonth.month + 1) + '/' + currentMonth.year + "</button>");
+            updateCalendar();
+            updateShareCal();
+            showtoday();
+            userInfo();
+
+            //bind action with elements
+            document.getElementById('prev').addEventListener("click", function (event) {
+                currentMonth = currentMonth.prevMonth();
+                d1 = calDateFirst(currentMonth);
+                d2 = calDateLast(currentMonth);
+                updateCalendar();
+                $('#changeDate').val(null);
+            }, false);
+            document.getElementById('next').addEventListener("click", function (event) {
+                currentMonth = currentMonth.nextMonth();
+                d1 = calDateFirst(currentMonth);
+                d2 = calDateLast(currentMonth);
+                updateCalendar();
+                $('#changeDate').val(null);
+            }, false);
+            document.getElementById('today').addEventListener("click", function (event) {
+                currentMonth = new Month(year, month);
+                d1 = calDateFirst(currentMonth);
+                d2 = calDateLast(currentMonth);
+                updateCalendar();
+                $('#changeDate').val(null);
+            }, false);
+
+            //bind event with date input at the top left corner of the web page
+            $("#changeDate").bind("change", function () {
+                let setday = $(this).val().split("-");  // This is fixed format, YYYY-MM-DD
+                currentMonth = new Month(parseInt(setday[0]), parseInt(setday[1]) - 1);    // This is fixed format, YYYY-MM-DD
+                updateCalendar();
+            });
+
+            // Sidebar
+            $("#add").click(function () {
+                if (userid !== null) {
+                    sidebarToggle(1);
+                    $('#sidebar-delete').hide();
+                    sidebarValueClear();
+                }
+                else {
+                    alert("You need to log in before adding an event");
+                }
+            });
+
+            $("#sidebar-cancel").click(function () {
+                sidebarToggle(0)
+            });
+
+            $('#sidebar-submit').click(function () {
+                addUpdateEvent();
+            });
+
+            $('#sidebar-delete').click(function () {
+                if (confirm("Confirm to delete this event?")) {
+                    deleteEvent();
+                }
+            });
+
+            // Account
+            $("#account-button").click(function () {
+                if (userid == null) {
+                    accountBarToggle(1);
+                }
+                else {
+                    userLogout();
+                }
+            });
+
+            $("#login-submit").click(function () {
+                userLogin();
+            });
+
+            $("#login-cancel").click(function () {
+                accountBarToggle(0);
+            });
+
+            $("#signup-submit").click(function () {
+                userSignUp();
+            });
+
+            $("#signup-cancel").click(function () {
+                accountBarToggle(0);
+            });
+
+            // Share
+            $("#share-submit").click(function () {
+                changeShareCal();
+            });
+
+            $('#share-undo').click(function () {
+                updateShareCal();
+            });
+
+        });
+
+    </script>
+</body>
+
+</html>

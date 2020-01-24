@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript"></script>
+    <!-- Using Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!--jquery ui files for time widget-->
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+</head>
+
+<body style="text-align: center">
+    <br>
+    <h1>My Calendar</h1>
+<!--    <div style="float: right;"><button id='info' type="button" class="btn btn-outline-success" style='width: 50px;height: 60px;float: left;'></button></div>-->
+    <div style="height: 38px">
+        <div style="float:left;">Set Date:<input id="changeDate" type="date"></div>
+        <div id="setTime" style="float: right;"></div>
+    </div>
+
+    <table class="table table-bordered">
+        <thead style="text-align: center">
+        <tr>
+            <th scope="col" style="padding-top: 35px; padding-bottom: 35px">SUN</th>
+            <th scope="col" style="padding-top: 35px; padding-bottom: 35px">MON</th>
+            <th scope="col" style="padding-top: 35px; padding-bottom: 35px">TUE</th>
+            <th scope="col" style="padding-top: 35px; padding-bottom: 35px">WED</th>
+            <th scope="col" style="padding-top: 35px; padding-bottom: 35px">THU</th>
+            <th scope="col" style="padding-top: 35px; padding-bottom: 35px">FRI</th>
+            <th scope="col" style="padding-top: 35px; padding-bottom: 35px">SAT</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><button type="button" class="btn btn-outline-success">Success</button></td>
+            <td><button type="button" class="btn btn-outline-success">Success</button></td>
+            <td><button type="button" class="btn btn-outline-success">Success</button></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <button id='prev' type="button" class="btn btn-secondary"><-prev month</button>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <button id='today' type="button" class="btn btn-success">today</button>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <button id='next' type="button" class="btn btn-primary">next month-></button>
+<!--    <p>Date: <input type="text" id="datepicker"></p>-->
+
+
+
+<script src="calendar.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+
+<script>
+    //get local time and generate Month object
+    // let myDate=new Date().toLocaleDateString(); //month day year
+    // let day = myDate.split("/");
+    // let year = parseInt(day[2]);
+    // let month = parseInt(day[0]) - 1;
+    // let currentMonth = new Month(year,month);
+
+    //test
+    // let today = currentMonth.getDateObject(day[1]).toISOString();
+    // $("body").append("<p>"+today+"</p>");
+
+    $(document).ready(function(){
+        //get local time and generate Month object corresponded with calender.js
+        let myDate=new Date().toLocaleDateString(); //month day year
+        //global variable used to record actual today value, not change
+        let day = myDate.split("/");
+        let year = parseInt(day[2]);
+        let month = parseInt(day[0]) - 1;
+        let currentMonth = new Month(year,month);
+        $("#setTime").append("<button ID='info' type=\"button\" class=\"btn btn-outline-success\">"+ parseInt(currentMonth.month + 1) + '/' + currentMonth.year +"</button>");
+        updateCalendar();
+        showtoday();
+
+        //why do not work?????????
+        //$("#datepicker").datepicker();
+
+        //let currentMonth = new Month(2017, 9);
+
+        //test in ready
+        //let today = currentMonth.getDateObject(day[1]).toISOString();
+        //$("body").append("<p>"+today+"</p>");
+
+        //bind action with three button at the bottom of the page
+        document.getElementById('prev').addEventListener("click",function (event) {
+            currentMonth = currentMonth.prevMonth();
+            updateCalendar();
+        },false);
+        document.getElementById('next').addEventListener("click",function (event) {
+            currentMonth = currentMonth.nextMonth();
+            updateCalendar();
+        },false);
+        document.getElementById('today').addEventListener("click",function (event) {
+            currentMonth = new Month(year,month);
+            updateCalendar();
+        },false);
+
+        //bind event with date input at the top left corner of the web page
+        $("#changeDate").bind("change",function () {
+           let setday = $(this).val().split("-"); //mode:2019-10-12
+            currentMonth = new Month(parseInt(setday[0]),parseInt(setday[1])-1);
+            updateCalendar();
+        });
+
+        //today button
+        function showtoday() {
+            document.getElementById('today').innerText = "today: " + myDate;
+        }
+
+        function updateCalendar(){
+            //show calendar's date, at top right corner of the web page
+            $("#info").remove();
+            $("#setTime").append("<button ID='info' type=\"button\" class=\"btn btn-outline-success\">"+ parseInt(currentMonth.month + 1) + '/' + currentMonth.year +"</button>");
+
+            let weeks = currentMonth.getWeeks();
+            $("tbody").empty();
+
+            //used to find the first day of the month
+            let flag = 0;
+            //used to find the end day of the month
+            let end = 0;
+
+            for(let w in weeks){
+                $("tbody").append("<tr id="+ w +"></tr>");
+
+                // days contains normal JavaScript Date objects.
+                let days = weeks[w].getDates();
+
+                //alert(w);
+
+                for(let d in days){
+                    // You can see console.log() output in your JavaScript debugging tool, like Firebug,
+                    // WebWit Inspector, or Dragonfly.
+                    //$("body").append("<strong>"+ days[d].getDate() +"</strong>")
+
+                    //days do not belong to this month
+                    if(flag == 0){
+                        if(parseInt(days[d].getDate()) == 1){
+                            flag = 1;
+                            end = parseInt(days[d].getDate());
+                            //if being today, then highlight
+                            if(days[d].getDate() == day[1] && (month).toString() == days[d].getMonth() && days[d].getFullYear() == day[2]){
+                                $("#"+w).append("<td><button type=\"button\" class=\"btn btn-success\" style='width: 50px; height: 60px; float: left;'>"+ days[d].getDate() + "</button></td>");
+                            }else{
+                                $("#"+w).append("<td><button type=\"button\" class=\"btn btn-outline-success\" style='width: 50px; height: 60px; float: left;'>"+ days[d].getDate() + "</button></td>");
+                            }
+                        }else{
+                            $("#"+w).append("<td></td>");
+                        }
+                    }else{
+
+                        //days belong to this month before the next month
+                        if(parseInt(days[d].getDate()) > end){
+                            if(days[d].getDate() == day[1] && (month).toString() == days[d].getMonth() && days[d].getFullYear() == day[2]){
+                                $("#"+w).append("<td><button type=\"button\" class=\"btn btn-success\" style='width: 50px; height: 60px; float: left;'>"+ days[d].getDate() + "</button></td>");
+                            }else{
+                                $("#"+w).append("<td><button type=\"button\" class=\"btn btn-outline-success\" style='width: 50px; height: 60px; float: left;'>"+ days[d].getDate() + "</button></td>");
+                            }
+                            end = parseInt(days[d].getDate());
+                        }else{
+                            //days belong to the next month
+                            $("#"+w).append("<td></td>");
+                        }
+
+                    }
+                    //if being today, then highlight
+                    // if(days[d].getDate() == day[1] && (month).toString() == days[d].getMonth() && days[d].getFullYear() == day[2]){
+                    //     $("#"+w).append("<td><button type=\"button\" class=\"btn btn-success\" style='width: 50px; height: 60px; float: left;'>"+ days[d].getDate() + "</button></td>");
+                    // }
+
+                   // $("#"+w).append("<td><button type=\"button\" class=\"btn btn-outline-success\" style='width: 50px;'>"+ days[d].getDate() + "</button></td>");
+
+                }
+            }
+        }
+
+
+    });
+
+</script>
+</body>
+</html>

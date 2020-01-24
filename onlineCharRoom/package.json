@@ -1,0 +1,26 @@
+{
+  "name": "chat",
+  "version": "1.0.0",
+  "description": "Chatroom on node.js",
+  "main": "index.js",
+  "dependencies": {
+    "mime": "^2.4.4",
+    "nodemon": "^1.19.4",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node chat/chat-server.js",
+    "test": " echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cse330-fall-2019/module6-group-hu-jiao-module6.git"
+  },
+  "author": "HU Yueteng, JIAO Ziyang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cse330-fall-2019/module6-group-hu-jiao-module6/issues"
+  },
+  "homepage": "https://github.com/cse330-fall-2019/module6-group-hu-jiao-module6#readme"
+}

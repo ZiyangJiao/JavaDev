@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Chat Room</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- Favicon -->
+    <!-- Source: https://favicon.io/emoji-favicons/grinning-face/ -->
+    <link rel="icon" type="image/png" href="resources/favicon.png" />
+</head>
+<body onbeforeunload="return refresh()" >
+<div class="container-fluid">
+    <div class="row">
+        <!--left part-->
+        <div class="col">
+            <hr>
+            <!--user info part-->
+            <div id="show_info" style="display: none">
+                <b>Logged in as:</b><br>
+                <span id="me" class="badge badge-primary text-wrap"></span><br/>
+                <b>Current chat room:</b><br>
+                <span id="room" class="badge badge-primary text-wrap"></span><br/>
+                <b>Other users in current chat room:</b><br>
+                <span id="others" class="badge badge-primary text-wrap"></span><br/>
+                <hr>
+                <b>Available rooms:</b><br>
+                <span id="avl_rooms" class="badge badge-primary text-wrap"></span>
+            </div>
+            <!--login-->
+            <div id="login">
+                <h4>Choose a username to join the chat room</h4>
+                <input type="text" id="username_input"/>
+                <button id="login_button" class="btn btn-outline-primary btn-sm">Log in</button>
+            </div>
+            <!--display after uer login-->
+            <div id="after_login" style="display: none">
+                <div id="join_room">
+                    <b>Join another chat room</b><br>
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Room name</span>
+                        </div>
+                        <input id="join_name" type="text" class="form-control form-control-sm" placeholder="Type the room name to join">
+                    </div>
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Password</span>
+                        </div>
+                        <input id="join_password" type="password" class="form-control form-control-sm" placeholder="Password: only required for private rooms">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary btn-sm" type="button" id="join">Join</button>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div id="new_room">
+                    <b>Create a new chat room</b><br>
+                    To create a <i>public</i> chat room: Leave the password blank<br>
+                    To create a <i>private</i> chat room: Type a password
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Room name</span>
+                        </div>
+                        <input id="room_name" type="text" class="form-control form-control-sm" placeholder="Type the room name to create">
+                    </div>
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Password</span>
+                        </div>
+                        <input id="room_password" type="password" class="form-control form-control-sm" placeholder="Password: only required for private rooms">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary btn-sm" type="button" id="create">Create</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="kick" style="display: none">
+                <b>Kick or ban users from this room</b><br>
+                <div class="input-group input-group-sm mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">User</span>
+                    </div>
+                    <input id="member_name" type="text" class="form-control form-control-sm" placeholder="Username to kick/ban">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-warning btn-sm" type="button" id="kick_btn">Kick</button>
+                        <button class="btn btn-outline-warning btn-sm" type="button" id="ban_btn">Ban</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--right part-->
+        <div id="right-part" class="col" style="display: none">
+            <nav id="navbar" class="navbar navbar-light bg-light">
+                <div id="chatlog" data-spy="scroll" style="position: relative; overflow-y: scroll; height: 300px; width:100%; display: none"></div>
+            </nav>
+            <hr>
+            <div id="manage">
+                <button type="button" class="btn btn-outline-primary btn-sm" id="back_public">Go to public room</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="save_record">Download chat log</button>
+                <button type="button" class="btn btn-outline-danger btn-sm" id="logout">Log out</button>
+            </div>
+            <hr>
+            <div style="width: 100%;">
+                <b>Change the appearance</b><br/> Color:<input type="color" id="font_color"/>
+                Size:<input id="font_size" list="size"/>
+                <datalist id="size">
+                    <option value=" small">
+                    <option value=" medium">
+                    <option value=" large">
+                </datalist>
+                Font:<input id="font_family" list="family"/>
+                <datalist id="family">
+                    <option value=" Arial">
+                    <option value=" Fantasy">
+                    <option value=" Cursive">
+                    <option value=" Monospace">
+                </datalist>
+                <button id="font_customize" class="btn btn-outline-primary btn-sm">Change</button>
+            </div>
+            <hr>
+            <b>Send public messages</b><br>
+            <div id="input-area" class="input-group">
+                <input id="message_input" type="text" class="form-control form-control-sm" placeholder="Type a message">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-primary btn-sm" type="button" id="send_msg">Send</button>
+                </div>
+            </div>
+            <hr>
+            <b>Send private messages</b><br>
+            <div id="private_msg" class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">To: </span>
+                </div>
+                <input id="private_message_username" type="text" class="form-control form-control-sm" placeholder="Receiver">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Message: </span>
+                </div>
+                <input id="private_message_content" type="text" class="form-control form-control-sm" placeholder="Type a message">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-primary btn-sm" type="button" id="private_msg_btn">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="js/chat.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+.DS_Store
+.idea
+cal/.vscode/
+apitest.php
+sql_man.sql
+api_sample.json
+z.html

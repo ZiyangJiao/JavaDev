@@ -1,0 +1,11 @@
+body {
+    background: #fcfcfc;
+    font-family: Arial, Verdana;
+}
+
+table, th, td {
+    border: 1px solid grey;
+    border-collapse: collapse;
+    padding: 10px;
+    text-align: center;
+}

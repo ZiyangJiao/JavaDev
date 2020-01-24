@@ -1,0 +1,9 @@
+.today-cell {
+    /* background-color: #D6EAF8; */
+    color: dodgerblue;
+    font-weight: bold;
+}
+
+#sidebar { display: none; }
+
+.hidden { display: none; }
