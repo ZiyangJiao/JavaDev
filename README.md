@@ -1,31 +1,41 @@
 # JavaDev
 
 **newsSite:**
--Linux
--Bash
--Amazon Web Services
--SSH
--Apache
--PHP
--Workflow
--Web Application Security, Part 1
+<ul>
+  <li>Linux</li>
+  <li>Bash</li>
+  <li>Amazon Web Services</li>
+  <li>SSH</li>
+  <li>Apache</li>
+  <li>PHP</li>
+  <li>Workflow</li>
+  <li>Web Application Security, Part 1</li>
+</ul>
 
 **fileShareSite:**
--MySQL 
--MySQL Schema and State (queries)
--PHP and MySQL (using MySQL from PHP)
--Web Application Security, Part 2
+<ul>
+  <li>MySQL</li>
+  <li>MySQL Schema and State (queries)</li>
+  <li>PHP and MySQL (using MySQL from PHP)</li>
+  <li>Web Application Security, Part 2</li>
+</ul>
 
 **calender:**
--JavaScript
--AJAX and JSON
--Web Application Security, Part 3
+<ul>
+  <li>avaScript</li>
+  <li>AJAX and JSON</li>
+  <li>Web Application Security, Part 3</li>
+ </ul>
 
 **onlineChatRoom:**
--Node.JS
--Socket.IO
+<ul>
+  <li>Node.JS</li>
+  <li>Socket.IO</li>
+</ul>
 
 **creativeproject_cart:**
--Web Frameworks
--Front End: Vue.js
--Back End: Node.js + Mongodb
+<ul>
+  <li>Web Frameworks</li>
+  <li>Front End: Vue.js</li>
+  <li>Back End: Node.js + Mongodb</li>
+ </ul>
